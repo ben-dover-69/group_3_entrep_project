@@ -1,238 +1,248 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Multipurpose Letter</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multipurpose Letter</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;500;700&family=Pacifico&family=Quicksand:wght@400;600&family=Comic+Neue:wght@300;700&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Poppins&family=Quicksand&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      background-color: #800020;
-      transition: 0.4s;
-      font-family: 'Quicksand', sans-serif;
-    }
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #800020;
+  font-family: 'Quicksand', sans-serif;
+  transition: 0.4s;
+}
 
-    h1 {
-      text-align:center;
-      font-size:4em;
-      color:white;
-      transition:0.3s;
-    }
+h1 { text-align: center; color: white; }
 
-    .postcard {
-      width: 800px;
-      height: 500px;
-      background-color: #f7f7f7;
-      margin: 0 auto;
-      border-radius: 20px;
-      padding: 3em;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      transition: all .4s ease;
-    }
+button, select, input, textarea {
+  border-radius: 8px;
+  padding: 8px;
+  font-family: inherit;
+}
 
-    input, textarea {
-      border: none;
-      border-radius: 8px;
-      padding:10px;
-      font-size:1.1em;
-      width:90%;
-      font-family: inherit;
-      margin-bottom:10px;
-    }
+textarea { resize: none; height: 120px; width: 100%; }
 
-    textarea { height:150px; resize:none; }
+.hidden { display: none; }
 
-    footer p { color:white; }
+/* ENVELOPE */
+.envelope-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60px;
+}
 
-    .flip-container { perspective: 1200px; width: 800px; margin: auto; margin-top: 20px; position: relative; }
-    .flipper { position: relative; transition: 0.8s; transform-style: preserve-3d; }
-    .flipped { transform: rotateY(180deg); }
-    .front, .back { backface-visibility: hidden; position: absolute; top:0; left:0; }
-    .back { transform: rotateY(180deg); }
+.envelope {
+  width: 260px;
+  height: 170px;
+  background: #eee;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
 
-    .dark { background: #0f0f0f !important; color: #e6e6e6 !important; }
-    .dark h1 { color: #ffcee6 !important; }
-    .dark .postcard { background: #1f1f1f !important; color: white !important; box-shadow: 0 10px 25px rgba(255,255,255,0.1);}
-    .dark input, .dark textarea { background: #2a2a2a !important; color: white !important; border: 1px solid #555 !important; }
-    .dark select, .dark button { background: #2a2a2a !important; color: white !important; border: 1px solid #666 !important; }
-    .dark label, .dark p { color:white !important; }
-    .dark .flip-container { background:none !important; }
+.flap {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 50%;
+  background: #ddd;
+  transform-origin: top;
+  transition: 0.8s;
+}
 
-    .love { background:#800020; font-family:'Poppins'; }
-    .love h1 { font-family:'Pacifico'; }
-    .formal { background:#d9e0e7; font-family:'Playfair Display'; }
-    .formal h1 { color:#002b5b; }
-    .informal { background:#fff0d6; font-family:'Comic Neue'; }
-    .informal h1 { color:#a85b00; }
-    .birthday { background:#ffccf2; font-family:'Poppins'; }
-    .birthday h1 { color:#d60073; }
-    .invitation { background:#eee8ff; font-family:'Quicksand'; }
-    .invitation h1 { color:#3a0088; }
+.envelope.open .flap { transform: rotateX(180deg); }
 
-    #playPauseBtn {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      background: #ff9dbc;
-      cursor: pointer;
-      position: relative;
-    }
+.letter-preview {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  transition: 0.8s;
+}
 
-    #playPauseBtn.play::before {
-      content: '';
-      position: absolute;
-      top: 12px;
-      left: 18px;
-      width: 0;
-      height: 0;
-      border-left: 15px solid white;
-      border-top: 10px solid transparent;
-      border-bottom: 10px solid transparent;
-    }
+.envelope.open .letter-preview {
+  transform: translateY(-120%);
+  opacity: 0;
+}
 
-    #playPauseBtn.pause::before,
-    #playPauseBtn.pause::after {
-      content: '';
-      position: absolute;
-      top: 12px;
-      width: 5px;
-      height: 20px;
-      background: white;
-    }
-    #playPauseBtn.pause::before { left: 15px; }
-    #playPauseBtn.pause::after { left: 25px; }
-  </style>
+/* LETTER */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+}
+
+.postcard {
+  background: #f7f7f7;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.dark {
+  background: #111;
+  color: white;
+}
+
+.dark .postcard { background: #1f1f1f; }
+
+@media (max-width: 600px) {
+  h1 { font-size: 2em; }
+}
+</style>
 </head>
 
-<body class="love">
+<body>
 
-<div style="text-align:center; margin-top:20px;">
-  <label style="color:white; font-size:20px;">Choose Letter Format: </label>
-  <select id="formatSelect" style="padding:8px; font-size:16px; border-radius:8px;">
-    <option value="love">Love Letter</option>
-    <option value="formal">Formal Letter</option>
-    <option value="informal">Informal Letter</option>
-    <option value="birthday">Birthday Letter</option>
-    <option value="invitation">Invitation Letter</option>
+<!-- ENVELOPE -->
+<div class="envelope-wrapper" id="envelopeUI">
+  <div class="envelope" id="envelope">
+    <div class="flap"></div>
+    <div class="letter-preview">📩 You received a letter</div>
+  </div>
+  <button id="openLetterBtn">Open Letter</button>
+</div>
+
+<!-- LETTER UI -->
+<div class="container hidden" id="letterUI">
+
+<h1 id="title">Love Letter</h1>
+
+<div class="controls">
+  <select id="format">
+    <option value="Love Letter">Love</option>
+    <option value="Formal Letter">Formal</option>
+    <option value="Informal Letter">Informal</option>
+    <option value="Birthday Letter">Birthday</option>
+    <option value="Invitation Letter">Invitation</option>
   </select>
 
-  <button id="darkModeBtn" style="margin-left:10px; padding:8px 15px; font-size:16px; border-radius:8px; cursor:pointer;">
-    Dark Mode
-  </button>
-  <button id="flipBtn" style="margin-left:10px; padding:8px 15px; font-size:16px; border-radius:8px; cursor:pointer;">
-    Flip Card
-  </button>
+  <select id="fontSelect">
+    <option value="Quicksand">Quicksand</option>
+    <option value="Poppins">Poppins</option>
+    <option value="Playfair Display">Playfair</option>
+  </select>
+
+  <input type="color" id="textColor">
+  <input type="range" min="14" max="28" value="16" id="fontSize">
+
+  <button id="darkBtn">Dark</button>
+  <button id="resetBtn">Reset</button>
 </div>
 
-<h1 id="titleText">Love Letter</h1>
+<div class="postcard" id="letterBox">
+  <p>Date: <span id="date"></span></p>
 
-<div style="text-align:center; margin:10px 0;">
-  <button id="playPauseBtn" class="play"></button>
+  <p>Dear <input id="recipient" placeholder="Recipient"></p>
+  <textarea id="message" placeholder="Write your message..."></textarea>
+  <p>Sincerely,</p>
+  <input id="sender" placeholder="(Optional / Anonymous)">
 </div>
 
-<div class="flip-container">
-  <div class="flipper" id="flipper">
-
-    <div class="front postcard">
-      <div class="letter">
-        <form>
-          <p>Dear </p>
-          <input type="text" id="recipient" placeholder="name of recipient">
-          <p>,</p><br>
-
-          <label>Message</label><br>
-          <textarea id="message"></textarea><br>
-
-          <p id="closingText">Yours Lovingly,</p><br>
-          <input type="text" id="sender_name" placeholder="your name">
-        </form>
-      </div>
-    </div>
-
-    <div class="back postcard">
-      <div class="address" id="addressSection">
-        <label>Recipient Email:</label><br>
-        <input type="email" id="recipient_email" placeholder="recipient's email"><br>
-
-        <div id="invitationAddress">
-          <label>Address:</label><br>
-          <input type="text" id="recipient_address" placeholder="Address">
-        </div>
-      </div>
-    </div>
-
-  </div>
+<div class="controls">
+  <input id="email" type="email" placeholder="Recipient Gmail">
+  <button id="saveDraft">Save Draft</button>
+  <button id="gmailBtn">Gmail Draft</button>
 </div>
 
-<footer>
-  <p>Happily crafted by Group 3.</p>
-</footer>
-
-<audio id="bgMusic" loop></audio>
+</div>
 
 <script>
-const formatSelect = document.getElementById("formatSelect");
-const invitationAddress = document.getElementById("invitationAddress");
-const bgMusic = document.getElementById("bgMusic");
-const flipper = document.getElementById("flipper");
-const darkBtn = document.getElementById("darkModeBtn");
-const playPauseBtn = document.getElementById("playPauseBtn");
+// Envelope animation logic
+const envelope = document.getElementById("envelope");
+const openBtn = document.getElementById("openLetterBtn");
+const envelopeUI = document.getElementById("envelopeUI");
+const letterUI = document.getElementById("letterUI");
 
-playPauseBtn.classList.remove('play');
-playPauseBtn.classList.add('pause');
+openBtn.onclick = () => {
+  envelope.classList.add("open");
+  setTimeout(() => {
+    envelopeUI.style.display = "none";
+    letterUI.classList.remove("hidden");
+  }, 900);
+};
 
-playPauseBtn.addEventListener("click", () => {
-  if(bgMusic.paused) {
-    bgMusic.play();
-    playPauseBtn.classList.remove('play');
-    playPauseBtn.classList.add('pause');
-  } else {
-    bgMusic.pause();
-    playPauseBtn.classList.remove('pause');
-    playPauseBtn.classList.add('play');
-  }
-});
+// Auto date
+document.getElementById("date").innerText =
+  new Date().toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
 
-formatSelect.addEventListener("change", function () {
-  const choice = this.value;
-  document.body.className = choice;
+// Elements
+const message = document.getElementById("message");
+const fontSelect = document.getElementById("fontSelect");
+const textColor = document.getElementById("textColor");
+const fontSize = document.getElementById("fontSize");
+const letterBox = document.getElementById("letterBox");
+const recipient = document.getElementById("recipient");
+const sender = document.getElementById("sender");
+const email = document.getElementById("email");
 
-  const title = document.getElementById("titleText");
-  const closing = document.getElementById("closingText");
-  const msg = document.getElementById("message");
+// Apply styles
+fontSelect.onchange = () => letterBox.style.fontFamily = fontSelect.value;
+textColor.oninput = () => letterBox.style.color = textColor.value;
+fontSize.oninput = () => letterBox.style.fontSize = fontSize.value + "px";
 
-  invitationAddress.style.display = (choice === "invitation") ? "block" : "none";
+// Format title
+document.getElementById("format").onchange = e =>
+  document.getElementById("title").innerText = e.target.value;
 
-  switch(choice){
-    case "love":
-      title.innerText="Love Letter"; closing.innerText="Yours Lovingly,"; msg.placeholder="My heart beats faster whenever I see you..."; bgMusic.src="kuped.mp3"; break;
-    case "formal":
-      title.innerText="Formal Letter"; closing.innerText="Respectfully Yours,"; msg.placeholder="I am writing to formally inform/request..."; bgMusic.src="peynknwite.mp3"; break;
-    case "informal":
-      title.innerText="Informal Letter"; closing.innerText="Take care,"; msg.placeholder="Hey! Just wanted to check on you..."; bgMusic.src="arizonab.mp3"; break;
-    case "birthday":
-      title.innerText="Birthday Letter"; closing.innerText="Warm wishes,"; msg.placeholder="Happy Birthday! I hope your day is amazing..."; bgMusic.src="bdaysmegs.mp3"; break;
-    case "invitation":
-      title.innerText="Invitation Letter"; closing.innerText="Sincerely,"; msg.placeholder="You are cordially invited to join..."; bgMusic.src="when.mp3"; break;
-  }
+// Dark mode
+document.getElementById("darkBtn").onclick = () =>
+  document.body.classList.toggle("dark");
 
-  bgMusic.load();
-  bgMusic.play();
-  playPauseBtn.classList.remove('play');
-  playPauseBtn.classList.add('pause');
-});
+// Reset
+document.getElementById("resetBtn").onclick = () => {
+  localStorage.clear();
+  location.reload();
+};
 
-darkBtn.addEventListener("click", () => { document.body.classList.toggle("dark"); });
-document.getElementById("flipBtn").addEventListener("click", () => { flipper.classList.toggle("flipped"); });
+// Save draft
+document.getElementById("saveDraft").onclick = () => {
+  localStorage.setItem("draft", JSON.stringify({
+    r: recipient.value,
+    m: message.value,
+    s: sender.value,
+    f: fontSelect.value,
+    c: textColor.value,
+    sz: fontSize.value
+  }));
+  alert("Draft saved!");
+};
 
-invitationAddress.style.display="none";
+// Load draft
+const saved = JSON.parse(localStorage.getItem("draft"));
+if(saved){
+  recipient.value = saved.r;
+  message.value = saved.m;
+  sender.value = saved.s;
+  fontSelect.value = saved.f;
+  textColor.value = saved.c;
+  fontSize.value = saved.sz;
+  letterBox.style.fontFamily = saved.f;
+  letterBox.style.color = saved.c;
+  letterBox.style.fontSize = saved.sz + "px";
+}
 
-bgMusic.src="kuped.mp3";
-bgMusic.load();
-bgMusic.play();
-playPauseBtn.classList.remove('play');
-playPauseBtn.classList.add('pause');
+// Gmail draft
+document.getElementById("gmailBtn").onclick = () => {
+  const to = email.value;
+  const body = encodeURIComponent(
+    `Dear ${recipient.value},\n\n${message.value}\n\n${sender.value || "— Anonymous"}`
+  );
+  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${to}&body=${body}`);
+};
 </script>
 
 </body>
