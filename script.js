@@ -1,9 +1,22 @@
-// ===== Envelope Animation =====
+// ===== Elements =====
 const envelope = document.getElementById("envelope");
 const openBtn = document.getElementById("openLetterBtn");
 const envelopeUI = document.getElementById("envelopeUI");
 const letterUI = document.getElementById("letterUI");
+const message = document.getElementById("message");
+const fontSelect = document.getElementById("fontSelect");
+const textColor = document.getElementById("textColor");
+const fontSize = document.getElementById("fontSize");
+const letterBox = document.getElementById("letterBox");
+const recipient = document.getElementById("recipient");
+const sender = document.getElementById("sender");
+const emailInput = document.getElementById("email");
+const formatSelect = document.getElementById("format");
+const bgMusic = document.getElementById("bgMusic");
+const sendBtn = document.getElementById("sendLetterBtn");
+const musicBtn = document.getElementById("musicBtn");
 
+// ===== Envelope Animation =====
 openBtn.onclick = () => {
   envelope.classList.add("open");
   setTimeout(() => {
@@ -19,18 +32,6 @@ document.getElementById("date").innerText = new Date().toLocaleDateString(undefi
   day: "numeric"
 });
 
-// ===== Elements =====
-const message = document.getElementById("message");
-const fontSelect = document.getElementById("fontSelect");
-const textColor = document.getElementById("textColor");
-const fontSize = document.getElementById("fontSize");
-const letterBox = document.getElementById("letterBox");
-const recipient = document.getElementById("recipient");
-const sender = document.getElementById("sender");
-const email = document.getElementById("email");
-const formatSelect = document.getElementById("format");
-const bgMusic = document.getElementById("bgMusic");
-
 // ===== Background Music per Letter Type =====
 const musicFiles = {
   "Love Letter": "kuped.mp3",
@@ -40,7 +41,7 @@ const musicFiles = {
   "Invitation Letter": "when.mp3"
 };
 
-// ===== Apply styles =====
+// ===== Apply Styles =====
 fontSelect.onchange = () => letterBox.style.fontFamily = fontSelect.value;
 textColor.oninput = () => letterBox.style.color = textColor.value;
 fontSize.oninput = () => letterBox.style.fontSize = fontSize.value + "px";
@@ -51,7 +52,7 @@ formatSelect.onchange = () => {
   document.getElementById("title").innerText = type;
   if (musicFiles[type]) {
     bgMusic.src = musicFiles[type];
-    bgMusic.play();
+    bgMusic.play().catch(()=>console.log("Autoplay blocked"));
   }
 };
 
@@ -91,14 +92,30 @@ if(saved){
   letterBox.style.fontSize = saved.sz + "px";
 }
 
-// ===== Send Letter Function (EmailJS) =====
-function sendMail() {
-  if (!email.value) {
-    alert("Please enter recipient's Gmail!");
+// ===== Music Play/Pause =====
+window.addEventListener('load', () => {
+  bgMusic.src = musicFiles["Love Letter"];
+  bgMusic.play().catch(()=>console.log("Autoplay blocked"));
+});
+
+musicBtn.addEventListener("click", () => {
+  if(bgMusic.paused){
+    bgMusic.play();
+    musicBtn.innerText = "Pause Music";
+  } else {
+    bgMusic.pause();
+    musicBtn.innerText = "Play Music";
+  }
+});
+
+// ===== Send Letter via EmailJS =====
+sendBtn.addEventListener("click", () => {
+  const toEmail = emailInput.value;
+  if (!toEmail) {
+    alert("Please enter the recipient's email!");
     return;
   }
 
-  // Collect letter data
   const letterData = {
     recipient_name: recipient.value,
     sender_name: sender.value || "Anonymous",
@@ -109,21 +126,16 @@ function sendMail() {
     size: fontSize.value
   };
 
-  // Encode letter data in Base64 to include in link
   const encoded = btoa(JSON.stringify(letterData));
-  const link = `${window.location.origin}/view.html?letter=${encoded}`;
+  const viewLink = `${window.location.origin}/view.html?letter=${encoded}`;
 
-  // Send via EmailJS
   emailjs.send("service_blwhkvs", "template_ka72mdg", {
-    to_email: email.value,
-    letter_link: link
+    to_email: toEmail,
+    letter_link: viewLink
   }).then(() => {
     alert("Letter sent successfully!");
-  }).catch(() => {
-    alert("Error sending letter. Please check your EmailJS settings.");
+  }).catch((err) => {
+    console.error(err);
+    alert("Failed to send letter. Check EmailJS configuration.");
   });
-}
-
-// ===== Load default music =====
-bgMusic.src = musicFiles["Love Letter"];
-bgMusic.play();
+});
